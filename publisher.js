@@ -35,9 +35,8 @@ async function startPublisher() {
             const message = { email, name, body }
             const jsonMessage = JSON.stringify(message);
     
-            //amqp-client function expects: publish(exchange, routingKey, message, options)
-            // Queue publishing the message
-            await q.publish('emails', { routingKey }, jsonMessage)
+            //amqp-client function expects: publish(message, properties)
+            await q.publish(jsonMessage, { routingKey })
             console.log("[📥] Message sent to queue", message)
         }
   
