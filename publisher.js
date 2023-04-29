@@ -3,13 +3,31 @@ import {}  from 'dotenv/config';
 
 async function startPublisher() {
     try {
+        // cloud Amqp authentication url for a instance is set up in environment variable
         const cloudAMQPURL = process.env.CLOUDAMQP_URL;
+
+        // Connection creation with rabbit MQ Cloud AMQP URL
         const connection = new AMQPClient(cloudAMQPURL);
+
+        // Settig up connection
         await connection.connect();
+
+        // Creating channel
         const channel = await connection.channel();
 
+        // Declare exchange
+        // 1st arg = exchange name
+        // 2nd arg = exchange type
         await channel.exchangeDeclare('emails', 'direct');
+
+        // Create queue
+        // 1st arg = queue name
         const q = await channel.queue('email.notifications');
+
+        // Bind queue with connection
+        // 1st arg = queue name
+        // 2nd arg = exchange name
+        // 3rd arg = routing key
         await channel.queueBind('email.notifications', 'emails', 'notification');
 
         //Publish a message to the exchange
@@ -18,6 +36,7 @@ async function startPublisher() {
             const jsonMessage = JSON.stringify(message);
     
             //amqp-client function expects: publish(exchange, routingKey, message, options)
+            // Queue publishing the message
             await q.publish('emails', { routingKey }, jsonMessage)
             console.log("[📥] Message sent to queue", message)
         }
@@ -45,4 +64,5 @@ async function startPublisher() {
     }
 }
 
+// Starting publisher
 startPublisher();
