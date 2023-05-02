@@ -2,7 +2,7 @@ import { AMQPClient } from "@cloudamqp/amqp-client";
 import {} from 'dotenv/config';
 
 async function startConsumer() {
-    const cloudAMQPURL = 'amqps://student:XYR4yqc.cxh4zug6vje@rabbitmq-exam.rmq3.cloudamqp.com/mxifnklj';
+    const cloudAMQPURL = process.env.CLOUDAMQP_URL;
     const connection  = new AMQPClient(cloudAMQPURL);
     await connection.connect();
     const channel = await connection.channel();
